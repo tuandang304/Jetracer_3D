@@ -2,9 +2,6 @@ import traitlets
 import ipywidgets.widgets as widgets
 from jetracer.nvidia_racecar import NvidiaRacecar
 
-# ========================================================
-# 1. KHỞI TẠO XE & MỞ KHÓA GÓC CUA GẮT
-# ========================================================
 car = NvidiaRacecar()
 
 try:
@@ -15,18 +12,11 @@ except Exception as e:
 
 car.steering_gain = -1.0
 
-
-# ========================================================
-# 2. KHỞI TẠO GIAO DIỆN TAY CẦM
-# ========================================================
 controller = widgets.Controller(index=0)
 display(controller)
 print("👉 CHÚ Ý: Hãy bấm một nút bất kỳ hoặc xoay nhẹ 2 cần gạt để kích hoạt tay cầm.")
 
 
-# ========================================================
-# 3. NÚT BẤM KẾT NỐI (ĐÃ TÁCH 2 CẦN GẠT TRÁI/PHẢI)
-# ========================================================
 btn_connect = widgets.Button(description="KÍCH HOẠT ĐIỀU KHIỂN XE", button_style='success', layout=widgets.Layout(width='300px', height='40px'))
 output = widgets.Output()
 
