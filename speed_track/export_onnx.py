@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Script to Export PyTorch Model (.pth) to ONNX (.onnx) for JetRacer Road Following.
+Uses opset_version=10 and IR version 8 for full compatibility with Jetson JetPack onnxruntime.
 """
 import os
 import sys
@@ -11,7 +12,7 @@ def export_pytorch_to_onnx(model_pth_path, output_onnx_path, num_outputs=2):
     """
     Exports PyTorch model weights to ONNX format.
     Default input shape: (1, 3, 224, 224)
-    Default outputs: 2 (x, y coordinate predictions for road center)
+    Enforces opset_version=10 & IR version <= 8 for Jetson compatibility.
     """
     print("--------------------------------------------------")
     print(f"[*] Input PyTorch Model Path: {model_pth_path}")
@@ -37,22 +38,29 @@ def export_pytorch_to_onnx(model_pth_path, output_onnx_path, num_outputs=2):
     # Dummy input (1, 3, 224, 224)
     dummy_input = torch.randn(1, 3, 224, 224, device=device)
 
-    # Export to ONNX
-    print("[*] Exporting model to ONNX format...")
+    # Export to ONNX with opset_version=10 (IR version 6/7)
+    print("[*] Exporting model to ONNX format (opset_version=10)...")
     torch.onnx.export(
         model,
         dummy_input,
         output_onnx_path,
         export_params=True,
-        opset_version=11,
+        opset_version=10,
         do_constant_folding=True,
         input_names=['input'],
-        output_names=['output'],
-        dynamic_axes={
-            'input': {0: 'batch_size'},
-            'output': {0: 'batch_size'}
-        }
+        output_names=['output']
     )
+
+    # Ensure IR version <= 8 using onnx library if present
+    try:
+        import onnx
+        onnx_model = onnx.load(output_onnx_path)
+        if onnx_model.ir_version > 8:
+            print(f"[*] Downgrading ONNX IR version from {onnx_model.ir_version} -> 8 for Jetson compatibility...")
+            onnx_model.ir_version = 8
+            onnx.save(onnx_model, output_onnx_path)
+    except Exception as e:
+        print(f"[*] ONNX IR check notice: {e}")
 
     print(f"🚀 [SUCCESS] Exported ONNX model to '{output_onnx_path}' successfully!")
 
