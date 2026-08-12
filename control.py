@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+try:
+    from IPython.display import display
+except ImportError:
+    pass
+
 import traitlets
 import ipywidgets.widgets as widgets
 from jetracer.nvidia_racecar import NvidiaRacecar
@@ -36,7 +43,7 @@ def thuc_hien_ket_noi(b):
                 print("🕹️ Cần TRÁI: Tiến / Lùi")
                 print("🕹️ Cần PHẢI: Bẻ lái Trái / Phải")
             except Exception as errors:
-                print(f"❌ Lỗi khi thiết lập liên kết: {errors}")
+                print("❌ Lỗi khi thiết lập liên kết: {}".format(errors))
         else:
             print("❌ [THẤT BẠI] Trình duyệt chưa nhận diện đủ cần gạt.")
             print("👉 Sửa lỗi: Bạn hãy xoay tròn cả 2 cần gạt trên tay cầm vài vòng, sau đó bấm lại nút này.")
